@@ -16,6 +16,9 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 from src.AnomalyDataLoader import AnomalyDataLoader
 from src.AnomalyModel import AnomalyModel
+from src.TimeSeries import msc_traffic_process_render, apn_utilisation_process_render
+from src.Prediction import eCell_Accessibility_process_render, eCell_Retainability_process_render
+
 # Helper function
 def get_model(selected_usecase, model_name):
     if selected_usecase == 'Time_Series_Forecasting':
@@ -60,24 +63,28 @@ with st.container():
 
 # Setting Sidebar for configuration
 st.sidebar.header('Configuration for Network Analysis')
-selected_usecase = st.sidebar.radio('Select the usecase to explore', ('Time_Series_Forecasting','Prediction', 'Anomaly_Detection'), index=2)
+selected_usecase = st.sidebar.radio('Select the usecase to explore', ('Time_Series_Forecasting','Prediction', 'Anomaly_Detection'), index=1)
 if selected_usecase == 'Time_Series_Forecasting':
     dataset_name = st.sidebar.selectbox('Select the dataset to analyse',
                                 ('MSC_Traffic', 'APN_Utilization'))
-    model_name = st.sidebar.selectbox('Select the model to analyse',
-                                    ('HWES', 'SARIMA', 'XGBoost', 'Prophet', 'LSTM', 'LSTM_GRU', 'NBEATS', 'CNN_Wavenets'))
+    if  dataset_name == 'MSC_Traffic':       
+        model_name = st.sidebar.selectbox('Select the model to analyse',
+                                    ('HWES', 'SARIMA', 'XGBoost', 'Prophet', 'LSTM'))
+    elif dataset_name == 'APN_Utilization': 
+        model_name = st.sidebar.selectbox('Select the model to analyse',
+                                    ('LSTM_GRU', 'NBEATS', 'CNN_Wavenets'))
 elif selected_usecase == 'Prediction':
     dataset_name = st.sidebar.selectbox('Select the dataset to analyse',
                                 ('eCell_Accessibility', 'eCell_Retainability'))
     model_name = st.sidebar.selectbox('Select the model to analyse',
                             ('Linear_Regression', 'Decision_Tree_Regression', 'Gradient_Boosting_Regression', 'AdaBoost_Regression', 'Support_Vector_Machine',
-                            'Regression_Using_Neural_Networks'))    
+                            'Regression_Using_Neural_Networks', 'SGD_Neural_Network'))    
 elif selected_usecase == 'Anomaly_Detection':
     dataset_name = st.sidebar.selectbox('Select the dataset to analyse',
                                 ('IP_Link_Jitter', 'IP_Router_Port_Total_Traffic_Rate'))
     model_name = st.sidebar.selectbox('Select the model to analyse',
                             ('Isolation_Forest', 'Local_Outlier_Factor', 'One_Class_SVM', 'DBSCAN', 'Autoencoder'))
-compare = st.sidebar.checkbox('Mark to compare with others')
+    compare = st.sidebar.checkbox('Mark to compare with others')
 process = st.sidebar.button('Analyze')
 
 with st.container():
@@ -89,16 +96,19 @@ dataset = get_dataset(selected_usecase, dataset_name)
 
 # Creating main skeleton of each page
 if selected_usecase == 'Time_Series_Forecasting':
-    with st.expander("Exploratory data analysis"):
-        st.subheader('Sample Data')
-    # with st.expander('Prediction plots and performance')
-    # with st.expander('Forecast dataframes')
-    # with st.expander('Forecast plots')
-# elif selected_usecase == 'Prediction':
-#     with st.expander('Exploratory data analysis')
-#     with st.expander('Performance metrics')
-#     with st.expander('Actual prediction dataframes')
-#     with st.expander('Actual prediction plots')
+    if process:
+        if dataset_name == 'MSC_Traffic':
+            msc_traffic_process_render(dataset_name, model_name)
+        elif dataset_name == 'APN_Utilization':
+            apn_utilisation_process_render(dataset_name, model_name)
+
+elif selected_usecase == 'Prediction':
+    if process:
+        if dataset_name == 'eCell_Accessibility':
+            eCell_Accessibility_process_render(dataset_name, model_name)
+        elif dataset_name == 'eCell_Retainability':
+            eCell_Retainability_process_render(dataset_name, model_name)
+
 elif selected_usecase == 'Anomaly_Detection':
     st.subheader('Exploratory data analysis')
     with st.spinner('Loading Data...'):        
