@@ -667,23 +667,17 @@ def apn_utilisation_process_render(dataset_name, model_name):
             st.write('Data dimensions:')
             st.write(f7d.shape)
             st.write('7 Day Dataframe')
-            temp = f7d.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
-            temp['Date'] = temp['Date'].dt.date
-            st.write(temp)
+            st.write(f7d)
         with st.expander('15 Day', expanded=False):
             st.write('Data dimensions:')
             st.write(f15d.shape)
             st.write('15 Day Dataframe')
-            temp = f15d.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
-            temp['Date'] = temp['Date'].dt.date
-            st.write(temp)
+            st.write(f15d)
         with st.expander('1 Month', expanded=False):
             st.write('Data dimensions:')
             st.write(f1m.shape)
             st.write('1 Month Dataframe')
-            temp = f1m.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
-            temp['Date'] = temp['Date'].dt.date
-            st.write(temp)
+            st.write(f1m)
     prompt.success('Forecasting Completed!')
 
     st.subheader('Forecast plots')
