@@ -7,6 +7,7 @@ import tensorflow as tf
 import streamlit as st
 import plotly.graph_objects as go
 import os
+import io
 from . import TimeSeriesUtils
 from numpy import sqrt
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, mean_squared_error
@@ -47,14 +48,21 @@ def msc_traffic_process_render(dataset_name, model_name):
         cols = [data.columns]
         with st.expander('Raw Sample Data', expanded=False):
             st.write('Head')
-            st.write(data.head(5))
-            st.write('Tail')
-            st.write(data.tail(5))
+            temp = data.iloc[:5, :].reset_index().rename(columns={'index':'MSC_Id'})
+            temp['MSC_Id'] = temp['MSC_Id'].dt.date
+            st.write(temp)
+            st.write('Tail') 
+            temp = data.iloc[-5:, :].reset_index().rename(columns={'index':'MSC_Id'})
+            temp['MSC_Id'] = temp['MSC_Id'].dt.date   
+            st.write(temp)
         with st.expander('Data Summary', expanded=False):
             st.write('Shape:')
             st.write(data.shape)
             st.write('Info:')
-            st.write(data.info())
+            buffer = io.StringIO()
+            data.info(buf=buffer)
+            print(buffer.getvalue())
+            st.text(buffer.getvalue())
             st.write('Null values before imputation:')
             st.table(data.isnull().sum())
             data = data.fillna(method='bfill')
@@ -76,8 +84,8 @@ def msc_traffic_process_render(dataset_name, model_name):
             ax[3, 1].plot(data.index, data['NR_MSC_8'])
             ax[4, 0].plot(data.index, data['NR_MSC_9'])
             ax[4, 1].plot(data.index, data['NR_MSC_10'])
-            st.pyplot(fig)
-
+            st.plotly_chart(fig, use_container_width=True)
+    
             # Initialize figure with subplots
             fig = make_subplots(
                 rows=5, cols=2, subplot_titles=("NR_MSC_1", "NR_MSC_2", "NR_MSC_3", "NR_MSC_4", "NR_MSC_5", "NR_MSC_6", "NR_MSC_7", "NR_MSC_8", "NR_MSC_9", "NR_MSC_10")
@@ -95,7 +103,8 @@ def msc_traffic_process_render(dataset_name, model_name):
             fig.add_trace(go.Scatter(x=data.index, y=data['NR_MSC_9'], name = "NR_MSC_9"), row=5, col=1)
             fig.add_trace(go.Scatter(x=data.index, y=data['NR_MSC_10'], name = "NR_MSC_10"), row=5, col=2)
             fig.update_layout(title_text="MSC Traffic", height=1500)
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, use_container_width=True)
+
         with st.expander('Data Box plots', expanded=False):
             #drawing figure with title and single axis. Size and resolution are specified
             fig = plt.figure(figsize=(15,5))
@@ -111,7 +120,7 @@ def msc_traffic_process_render(dataset_name, model_name):
             for col in data:
                 fig.add_trace(go.Box(y=data[col].values, name=data[col].name))
             fig.update_layout(title_text="MSC Traffic", height=700)                       
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, use_container_width=True)
     prompt.success('Data Loaded!')
 
     st.subheader('Training plots and performance')
@@ -121,7 +130,7 @@ def msc_traffic_process_render(dataset_name, model_name):
             l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             tr, te  = TimeSeriesUtils.train_test_split(l, 3)
             with st.expander('Training & Testing split', expanded=False):
-                st.write(tr, te)
+                st.write('Training and Test Split Complete!')
             with st.expander('Fitting Daily Data', expanded=False):
                 f15d, f1m, f3m = TimeSeriesUtils.walk_forward_validation_hwse(data, 70, "Days")
         elif model_name == 'SARIMA':
@@ -163,17 +172,23 @@ def msc_traffic_process_render(dataset_name, model_name):
             st.write('Data dimensions:')
             st.write(f15d.shape)
             st.write('15 Day Dataframe')
-            st.write(f15d.head())
+            temp = f15d.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
+            temp['Date'] = temp['Date'].dt.date
+            st.write(temp)
         with st.expander('1 Month', expanded=False):
             st.write('Data dimensions:')
             st.write(f1m.shape)
             st.write('1 Month Dataframe')
-            st.write(f1m.head())
+            temp = f1m.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
+            temp['Date'] = temp['Date'].dt.date
+            st.write(temp)
         with st.expander('3 Month', expanded=False):
             st.write('Data dimensions:')
             st.write(f3m.shape)
             st.write('3 Month Dataframe')
-            st.write(f3m.head())
+            temp = f3m.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
+            temp['Date'] = temp['Date'].dt.date
+            st.write(temp)
     prompt.success('Forecasting Completed!')
 
     st.subheader('Forecast plots')
@@ -218,7 +233,7 @@ def apn_utilisation_process_render(dataset_name, model_name):
             # SET INDEX NAME TO `DATE`
             apn.index.name = 'DATE'
             st.write('Dataset Description:')
-            st.table(apn.describe())
+            st.write(apn.describe())
             st.write('Sample Data:')
             st.write(apn.head(3))
         with st.expander('Data Preparation', expanded=False):
@@ -514,6 +529,7 @@ def apn_utilisation_process_render(dataset_name, model_name):
                 date_to_index = pd.Series(index=pd.Index([pd.to_datetime(c) for c in df.columns[1:]]),
                                         data=[i for i in range(len(df.columns[1:]))])
                 series_array = df[df.columns[1:]].values
+            
                 st.write(series_array.shape)
 
             with st.expander('Fitting Daily Data', expanded=False):
@@ -592,8 +608,7 @@ def apn_utilisation_process_render(dataset_name, model_name):
                                                             val_pred_start, val_pred_end)[:first_n_samples]
                 val_target_data = TimeSeriesUtils.cnn_wavenets_transform_series_decode(val_target_data, val_encode_series_mean)
 
-                st.write('Validation Target Reshaping')
-                st.write(val_target_data.reshape(1, 50))
+                val_target_data.reshape(1, 50)
                 predicted = model.predict(val_input_data).reshape(50, 1)
                 ytrue = val_target_data.reshape(50, 1)
 
@@ -625,19 +640,19 @@ def apn_utilisation_process_render(dataset_name, model_name):
                     st.write("RMSE : ", rmse_metr)
                     st.write("==============")
 
-                f7 = np.array(TimeSeriesUtils.cnn_wavenets_forecast(model, encoder_input_data, 168)).reshape(168, 50)
+                f7 = np.array(TimeSeriesUtils.cnn_wavenets_forecast(model, encoder_input_data, 168, scaler)).reshape(168, 50)
                 cols = apn.columns
                 f7d = pd.DataFrame(f7,columns=cols)
                 f7d["Date"] = pd.date_range(start= '2021-04-01', periods=168, freq='1H')
                 f7d = f7d.set_index("Date")
 
-                f15 = np.array(TimeSeriesUtils.cnn_wavenets_forecast(model, encoder_input_data, 360)).reshape(360, 50)
+                f15 = np.array(TimeSeriesUtils.cnn_wavenets_forecast(model, encoder_input_data, 360, scaler)).reshape(360, 50)
                 cols = apn.columns
                 f15d = pd.DataFrame(f15,columns=cols)
                 f15d["Date"] = pd.date_range(start= '2021-04-01', periods=360, freq='1H')
                 f15d = f15d.set_index("Date")
 
-                f1 = np.array(TimeSeriesUtils.cnn_wavenets_forecast(model, encoder_input_data, 720)).reshape(720, 50)
+                f1 = np.array(TimeSeriesUtils.cnn_wavenets_forecast(model, encoder_input_data, 720, scaler)).reshape(720, 50)
                 cols = apn.columns
                 f1m = pd.DataFrame(f1,columns=cols)
                 f1m["Date"] = pd.date_range(start= '2021-04-07', periods=720, freq='1H')
@@ -652,17 +667,23 @@ def apn_utilisation_process_render(dataset_name, model_name):
             st.write('Data dimensions:')
             st.write(f7d.shape)
             st.write('7 Day Dataframe')
-            st.write(f7d.head())
+            temp = f7d.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
+            temp['Date'] = temp['Date'].dt.date
+            st.write(temp)
         with st.expander('15 Day', expanded=False):
             st.write('Data dimensions:')
             st.write(f15d.shape)
             st.write('15 Day Dataframe')
-            st.write(f15d.head())
+            temp = f15d.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
+            temp['Date'] = temp['Date'].dt.date
+            st.write(temp)
         with st.expander('1 Month', expanded=False):
             st.write('Data dimensions:')
             st.write(f1m.shape)
             st.write('1 Month Dataframe')
-            st.write(f1m.head())
+            temp = f1m.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
+            temp['Date'] = temp['Date'].dt.date
+            st.write(temp)
     prompt.success('Forecasting Completed!')
 
     st.subheader('Forecast plots')

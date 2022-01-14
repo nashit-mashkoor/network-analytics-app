@@ -113,7 +113,15 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
             st.write('===============================================')
 
             st.write('Joint Distributions of independent variables')
-            sns.pairplot(data[['RRC Setup Param1','RRC Setup Param2','Initial ERAB Establishment Param1','Initial ERAB Establishment Param2','Added ERAB Establishment Param1','Added ERAB Establishment Param2','S1 Setup Param1','S1 Setup Param2']], diag_kind="kde")
+            chart = sns.pairplot(data[['RRC Setup Param1','RRC Setup Param2','Initial ERAB Establishment Param1','Initial ERAB Establishment Param2','Added ERAB Establishment Param1','Added ERAB Establishment Param2','S1 Setup Param1','S1 Setup Param2']], diag_kind="kde")
+            for ax in chart.axes.flatten():
+                ax.tick_params(rotation = 45)
+                # rotate x axis labels
+                ax.set_xlabel(ax.get_xlabel(), rotation = -30)
+                # rotate y axis labels
+                ax.set_ylabel(ax.get_ylabel(), rotation = 0)
+                # set y labels alignment
+                ax.yaxis.get_label().set_horizontalalignment('right')
             st.pyplot(plt.gcf())
             plt.clf()
             st.write('===============================================')
@@ -145,8 +153,6 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
             with st.expander('Model Performance', expanded=False):
                 lin_reg = LinearRegression() 
                 lin_reg.fit(x_train_std,y_train) 
@@ -174,8 +180,6 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
             
             with st.expander('Model Performance', expanded=False):
                 param_grid = {'max_features': ['auto', 'sqrt'],
@@ -205,9 +209,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
-            
+
             with st.expander('Model Performance', expanded=False):
                 param_grid = {"learning_rate"    : [0.01, 0.1, 0.3],
                             "subsample"        : [0.5, 1.0],
@@ -241,8 +243,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 param_grid = {"learning_rate" : [0.01, 0.1, 0.3],
@@ -272,8 +273,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 regressor= SVR(kernel='rbf')
@@ -300,8 +300,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 hidden_units1 = 60
@@ -351,8 +350,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 input_size=8
@@ -417,7 +415,15 @@ def eCell_Retainability_process_render(dataset_name, model_name):
         with st.expander('Data Plots', expanded=False):
             
             st.write('Joint Distributions of independent variables')
-            sns.pairplot(data[['ErabRelAbnormalEnb_Param1','ErabRelAbnormalEnb_Param2','ErabRelAbnormalMme_Param1','ErabRelAbnormalMme_Param2','ErabRelMme_Param1','ErabRelMme_Param2','ErabRelNormalEnb_Param1','ErabRelNormalEnb_Param2']], diag_kind="kde")
+            chart=sns.pairplot(data[['ErabRelAbnormalEnb_Param1','ErabRelAbnormalEnb_Param2','ErabRelAbnormalMme_Param1','ErabRelAbnormalMme_Param2','ErabRelMme_Param1','ErabRelMme_Param2','ErabRelNormalEnb_Param1','ErabRelNormalEnb_Param2']], diag_kind="kde")
+            for ax in chart.axes.flatten():
+                ax.tick_params(rotation = 45)
+                # rotate x axis labels
+                ax.set_xlabel(ax.get_xlabel(), rotation = -30)
+                # rotate y axis labels
+                ax.set_ylabel(ax.get_ylabel(), rotation = 0)
+                # set y labels alignment
+                ax.yaxis.get_label().set_horizontalalignment('right')
             st.pyplot(plt.gcf())
             plt.clf()
             st.write('===============================================')
@@ -480,8 +486,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: Min Max Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             with st.expander('Model Performance', expanded=False):
                 lin_reg = LinearRegression() 
                 lin_reg.fit(x_train_std,y_train) 
@@ -509,8 +514,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: MinMax Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 param_grid = {'max_features': ['auto', 'sqrt'],
@@ -540,8 +544,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: MinMax Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 param_grid = {"learning_rate"    : [0.01, 0.1, 0.3],
@@ -576,8 +579,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: MinMax Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 param_grid = {"learning_rate" : [0.01, 0.1, 0.3],
@@ -607,8 +609,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: MinMax Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 regressor= SVR(kernel='rbf')
@@ -635,8 +636,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: MinMax Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 hidden_units1 = 60
@@ -686,8 +686,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 x_test_std = scaler.fit_transform(x_test)
                 st.write('Scaling applied: MinMax Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-                st.write('Train Y labels')
-                st.write(y_train)
+
             
             with st.expander('Model Performance', expanded=False):
                 input_size=8

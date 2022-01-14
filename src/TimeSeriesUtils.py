@@ -208,6 +208,7 @@ def xgbplothist(train, test, predicted):
     future, = plt.plot(test.index, test.values, color ='blue', label="Test")
     predicted_future, = plt.plot(test.index, predicted, 'g.-', label="Predicted")
     plt.legend()
+
     st.pyplot(fig)
 
 # fit an xgboost model and make a one step prediction
@@ -220,8 +221,8 @@ def xgboost_model(train, testX):
     model = XGBRegressor(objective='reg:squarederror', n_estimators=1000)
     model.fit(trainX, trainy)
     yhat = model.predict([testX])
-    #print("Test val : ", testX)
-    #print("Predicted : ", yhat)
+    print("Test val : ", len(testX))
+    print("Predicted : ", len(yhat))
     return yhat[0], model
 
 def walk_forward_validation_xbg(data, n_test):
@@ -233,7 +234,7 @@ def walk_forward_validation_xbg(data, n_test):
         curr_series = series_to_supervised(curr_data.values)
         #print("series", curr_data)
         predictions = list()
-        train, test = train_test_split(curr_series, n_test)
+        train, test = xgb_train_test_split(curr_series, n_test)
         ##
         history = [x for x in train]
         for k in range(len(test)):
@@ -555,7 +556,7 @@ def cnn_wavenets_mean_absolute_scaled_error(y_true, y_pred, y_train):
     scale = mean_absolute_error(y_train[1:], y_train[:-1])
     return np.mean(np.abs(e_t / scale))
 
-def cnn_wavenets_forecast(model, series, period):
+def cnn_wavenets_forecast(model, series, period, scaler):
     predictions = []
     last_tmstep = None
     for p in range(0, period):
@@ -564,7 +565,7 @@ def cnn_wavenets_forecast(model, series, period):
             
         temp = last_tmstep
         future_pred = model.predict(last_tmstep)#.reshape(1, 50)
-        predictions.append(future_pred.reshape(temp.shape[2], temp.shape[0]))
+        predictions.append(scaler.inverse_transform(future_pred.reshape(temp.shape[2], temp.shape[0])))
         init_last_tmstep = last_tmstep.reshape(temp.shape[0], temp.shape[1])
         rest_vals = init_last_tmstep
         last_tmstep = np.append(rest_vals, future_pred.reshape(temp.shape[0], temp.shape[2]), axis=1)
