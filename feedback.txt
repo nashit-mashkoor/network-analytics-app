@@ -1,0 +1,42 @@
+Time Series Forecasting:
+MSC Dataset:
+1) The head and tail of data are showing hour along with date even though it is daily data. It shows only date in the shared notebook.
+    -> Fixed
+
+2) The data info is not getting printed. It is shown in the shared notebook.
+    -> Fixed
+
+3) Dataset Description is going out of the GUI frame.
+    -> Fixed
+
+4) The plotly graphs shown in GUI are saturated compared to shown in the shared notebook.
+    -> Graphs updated using a different function to render on gui now. Let me know if it looks 
+    alright now.
+    One reason for possible difference is that we are trying to fit the graphs in expander
+
+5) The forecast dataframe is also showing hour along with date even though it is daily data. It shows only date in the shared notebook.
+    -> Fixed
+
+6) In HWES Training & Testing Split showing some data which is not required. Just a message that train-test split is completed is fine.
+    -> Fixed
+
+7) XGBoost is giving the error (ValueError) in Fitting Daily Data step.
+    -> Fixed
+
+APN Dataset:
+1) Dataset Description is going out of the GUI frame
+    ->Fixed
+2) In CNN_Wavenets, printing of validation target reshaping is not required
+    ->Fixed
+3) The values in forecast dataframe and forecast plots for CNN_Wavenets are not correct. Appearing to be scaled values. The shared notabook has correct values.
+    -> Fixed
+Prediction:
+1) In training and test split tab,a label 'Train Y labels' and a table with accessibility & retainability values is shown in the GUI. Not sure about this. I think this can be removed.
+    -> Fixed
+2) Overlapping of headers in join distribution plot in eCell_retainability data.
+    -> Fixed
+Anomaly Detection:
+1) The heading of Outlier detection result are getting shown at the bottom of the cell instead of at the top.
+    -> Fixed
+2) The Classification report is not getting printed correctly in the test results.
+    -> Fixed

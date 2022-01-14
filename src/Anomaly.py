@@ -59,6 +59,9 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
             # ###############################################
             # Identify outliers in the training dataset
             Isolation_Forest = IsolationForest()
+            if model_name == 'Isolation_Forest':
+                st.write("Outliers Detected by Isolation Forest:")
+                st.write("======================================")
             outlier1 = pd.DataFrame()
             list_1 = []
             for i in range(len(X)):
@@ -81,13 +84,14 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by Isolation Forest:")
-                st.write("======================================")
             outlier1 = outlier1.reset_index(drop=True)
             # ######################################################
 
             # ######################################################
             model = AnomalyUtils.AutoEncoder(output_units = 1)
+            if model_name == 'Autoencoder':
+                st.write("Outliers Detected by Autoencoder:")
+                st.write("======================================")
             outlier2 = pd.DataFrame()
             list_2 = []
             for i in range(len(X)):
@@ -112,8 +116,6 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by Autoencoder:")
-                st.write("======================================")
             outlier2 = outlier2.reset_index(drop=True)
 
             # ######################################################
@@ -121,7 +123,9 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
             # ######################################################
             # Identify outliers in the training dataset
             Local_Outlier_Factor = LocalOutlierFactor()
-
+            if model_name == 'Local_Outlier_Factor':
+                st.write("Outliers Detected by LocalOutlierFactor:")
+                st.write("========================================")
             outlier3 = pd.DataFrame()
             list_3 = []
             for i in range(len(X)):
@@ -143,14 +147,15 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by LocalOutlierFactor:")
-                st.write("========================================")
             outlier3 = outlier3.reset_index(drop=True)
             # ######################################################
 
             # ######################################################
             # Identify outliers in the training dataset
             One_Class_SVM = OneClassSVM()
+            if model_name == 'One_Class_SVM':
+                st.write("Outliers Detected by OneClassSVM:")
+                st.write("=================================")
 
             outlier4 = pd.DataFrame()
             list_4 = []
@@ -174,15 +179,15 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by OneClassSVM:")
-                st.write("=================================")
             outlier4 = outlier4.reset_index(drop=True)
             # ######################################################
 
             # ######################################################
             # Identify outliers in the training dataset
             outlier_detection = DBSCAN()
-
+            if model_name == 'DBSCAN':
+                st.write("Outliers Detected by DBSCAN:")
+                st.write("============================")
             outlier5 = pd.DataFrame()
             list_5 = []
             for i in notebook.tqdm(range(len(X))):
@@ -205,8 +210,6 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by DBSCAN:")
-                st.write("============================")
             outlier5 = outlier5.reset_index(drop=True)
             for i in range(len(X)):
                 outlier5.loc[i] = np.where(outlier5.loc[i] != -1, 1, outlier5.loc[i])
@@ -330,6 +333,9 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
             # ###############################################
             # Identify outliers in the training dataset
             Isolation_Forest = IsolationForest()
+            if model_name == 'Isolation_Forest':
+                st.write("Outliers Detected by Isolation Forest:")
+                st.write("======================================")
             outlier1 = pd.DataFrame()
             list_1 = []
             for i in range(len(X)):
@@ -352,13 +358,15 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by Isolation Forest:")
-                st.write("======================================")
+
             outlier1 = outlier1.reset_index(drop=True)
             # ######################################################
 
             # ######################################################
             model = AnomalyUtils.AutoEncoder(output_units = 1)
+            if model_name == 'Autoencoder':
+                st.write("Outliers Detected by Autoencoder:")
+                st.write("======================================")
             outlier2 = pd.DataFrame()
             list_2 = []
             for i in range(len(X)):
@@ -383,8 +391,6 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by Autoencoder:")
-                st.write("======================================")
             outlier2 = outlier2.reset_index(drop=True)
 
             # ######################################################
@@ -394,6 +400,9 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
             Local_Outlier_Factor = LocalOutlierFactor()
 
             outlier3 = pd.DataFrame()
+            if model_name == 'Local_Outlier_Factor':
+                st.write("Outliers Detected by LocalOutlierFactor:")
+                st.write("========================================")
             list_3 = []
             for i in range(len(X)):
                 a = X.loc[i].to_numpy().reshape((len(X.loc[i]), 1))
@@ -414,15 +423,15 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by LocalOutlierFactor:")
-                st.write("========================================")
             outlier3 = outlier3.reset_index(drop=True)
             # ######################################################
 
             # ######################################################
             # Identify outliers in the training dataset
             One_Class_SVM = OneClassSVM()
-
+            if model_name == 'One_Class_SVM':
+                st.write("Outliers Detected by OneClassSVM:")
+                st.write("=================================")
             outlier4 = pd.DataFrame()
             list_4 = []
             for i in notebook.tqdm(range(len(X))):
@@ -445,15 +454,15 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by OneClassSVM:")
-                st.write("=================================")
             outlier4 = outlier4.reset_index(drop=True)
             # ######################################################
 
             # ######################################################
             # Identify outliers in the training dataset
             outlier_detection = DBSCAN()
-
+            if model_name == 'DBSCAN':
+                st.write("Outliers Detected by DBSCAN:")
+                st.write("============================")
             outlier5 = pd.DataFrame()
             list_5 = []
             for i in notebook.tqdm(range(len(X))):
@@ -476,8 +485,6 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                 fig = px.bar(x=x, y=y)
                 st.plotly_chart(fig)
 
-                st.write("Outliers Detected by DBSCAN:")
-                st.write("============================")
             outlier5 = outlier5.reset_index(drop=True)
             for i in range(len(X)):
                 outlier5.loc[i] = np.where(outlier5.loc[i] != -1, 1, outlier5.loc[i])

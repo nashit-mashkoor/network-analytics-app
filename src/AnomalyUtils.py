@@ -145,7 +145,7 @@ def ip_link_test( X_test, outlier, verbose):
             st.write("======================")
             st.write("Classification Report:")
             st.write("======================")
-            st.write(report)
+            st.text(report)
 
         # Confusion Matrix
         matrix = confusion_matrix(y_test, y_pred)
@@ -278,7 +278,7 @@ def ip_router_test( X_test, outlier, verbose):
             st.write("======================")
             st.write("Classification Report:")
             st.write("======================")
-            st.write(report)
+            st.text(report)
 
         # Confusion Matrix
         matrix = confusion_matrix(y_test, y_pred)
