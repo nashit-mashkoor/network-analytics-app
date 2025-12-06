@@ -31,12 +31,16 @@ from tensorflow.keras.losses import MeanSquaredError
 from keras import utils as np_utils
 from tensorflow.keras import layers
 from . import PredictionUtils
+from . import styles
 
 def eCell_Accessibility_process_render(dataset_name, model_name):
-    st.subheader('Exploratory data analysis')
+    # Inject custom CSS
+    styles.inject_analysis_css()
+    
+    styles.section_header("Exploratory Data Analysis", "🔍")
     with st.spinner('Loading Data...'):        
         prompt = st.empty()  
-        with st.expander('Data Summary', expanded=False):
+        with st.expander('📊 Data Summary', expanded=False):
            #Importing the given Data Set
             data = pd.read_csv('data/eCell_Accessibility_data.csv')
             st.write('Data sample')
@@ -57,7 +61,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
             st.write('Data Description')
             st.write(data.describe())
 
-        with st.expander('Data Plots', expanded=False):
+        with st.expander('📈 Data Plots', expanded=False):
             st.write('RRC Setup Param1 distribition boxplot')
             plt.subplots(figsize=(8,8))
             sns.boxplot(x = data['RRC Setup Param1'])
@@ -137,11 +141,12 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
             #seperating independent and dependent variables
             x = data.drop(['Accessibility','eCell_Id'], axis=1)
             y = data['Accessibility']
-            st.write('Data Shape')
-            st.write(x.shape, y.shape)
-    prompt.success('Data Loaded!')
+            styles.display_data_shape(x.shape, "Feature matrix")
+            styles.display_data_shape(y.shape, "Target vector")
+    prompt.success('✅ Data Loaded Successfully!')
 
-    st.subheader('Model Performance Metrics')
+    styles.styled_divider()
+    styles.section_header("Model Performance Metrics", "📈")
     with st.spinner('Training Model...'):        
         prompt = st.empty()
 
@@ -153,7 +158,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 x_test_std = sc.fit_transform(x_test)
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 lin_reg = LinearRegression() 
                 lin_reg.fit(x_train_std,y_train) 
                 #Prediction using test set
@@ -161,11 +166,9 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 mae=metrics.mean_absolute_error(y_test, y_pred) 
                 mse=metrics.mean_squared_error(y_test, y_pred)
                 rmse=np.sqrt(mse)
-                # Printing the metrics 
-                st.write('R2 square:',metrics.r2_score(y_test, y_pred)) 
-                st.write('MAE: ', mae) 
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                r2 = metrics.r2_score(y_test, y_pred)
+                # Display metrics in styled format
+                styles.format_model_performance(r2=r2, mae=mae, mse=mse, rmse=rmse)
                 # Prediction frame
                 x_test= pd.DataFrame(x_test)
                 y_pred= pd.DataFrame(y_pred)
@@ -181,7 +184,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
             
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 param_grid = {'max_features': ['auto', 'sqrt'],
                             'max_depth': np.arange(5, 36, 5),
                             'min_samples_split': [5, 10, 20, 40],
@@ -193,10 +196,8 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 mae=metrics.mean_absolute_error(y_test, y_pred) 
                 mse=metrics.mean_squared_error(y_test, y_pred)
                 rmse=np.sqrt(mse)
-                st.write('R2 square:',metrics.r2_score(y_test, y_pred)) 
-                st.write('MAE: ', mae) 
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                r2 = metrics.r2_score(y_test, y_pred)
+                styles.format_model_performance(r2=r2, mae=mae, mse=mse, rmse=rmse)
                 y_pred= pd.DataFrame(y_pred)
                 y_pred.columns= ['Pred_Accessibility']
                 pred_df = pd.concat([x_test.reset_index(drop='True'),y_test.reset_index(drop='True'),y_pred.reset_index(drop='True')],axis=1)
@@ -210,7 +211,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 st.write('Scaling applied: Standard Scaler')
                 st.write('Split percentage: {}'.format(0.3))
 
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 param_grid = {"learning_rate"    : [0.01, 0.1, 0.3],
                             "subsample"        : [0.5, 1.0],
                             "max_depth"        : [3, 4, 5, 10, 15, 20],
@@ -225,11 +226,8 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 mae=metrics.mean_absolute_error(y_test, y_pred)
                 mse=metrics.mean_squared_error(y_test, y_pred)
                 rmse = np.sqrt(mse)
-                # Printing the metrics
-                st.write('R2 square:',metrics.r2_score(y_test, y_pred))
-                st.write('MAE: ', mae)
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                r2 = metrics.r2_score(y_test, y_pred)
+                styles.format_model_performance(r2=r2, mae=mae, mse=mse, rmse=rmse)
 
                 y_pred= pd.DataFrame(y_pred)
                 y_pred.columns= ['Pred_Accessibility']
@@ -245,7 +243,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 st.write('Split percentage: {}'.format(0.3))
 
             
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 param_grid = {"learning_rate" : [0.01, 0.1, 0.3],
               "loss"          : ['linear', 'square', 'exponential']
              }
@@ -255,11 +253,8 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 mae=metrics.mean_absolute_error(y_test, y_pred)
                 mse=metrics.mean_squared_error(y_test, y_pred)
                 rmse = np.sqrt(mse)
-                # Printing the metri
-                st.write('R2 square:',metrics.r2_score(y_test, y_pred))
-                st.write('MAE: ', mae)
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                r2 = metrics.r2_score(y_test, y_pred)
+                styles.format_model_performance(r2=r2, mae=mae, mse=mse, rmse=rmse)
 
                 y_pred= pd.DataFrame(y_pred)
                 y_pred.columns= ['Pred_Accessibility']
@@ -275,19 +270,15 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 st.write('Split percentage: {}'.format(0.3))
 
             
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 regressor= SVR(kernel='rbf')
                 regressor.fit(x_train_std,y_train)
                 y_pred_svm=regressor.predict(x_test_std)
-                #y_pred_svm = cross_val_predict(regressor, x, y)
                 mae=metrics.mean_absolute_error(y_test, y_pred_svm)
                 mse=metrics.mean_squared_error(y_test, y_pred_svm)
                 rmse= np.sqrt(mse)
-                # Printing the metrics
-                st.write('R2 square:',metrics.r2_score(y_test, y_pred_svm))
-                st.write('MAE: ', mae)
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                r2 = metrics.r2_score(y_test, y_pred_svm)
+                styles.format_model_performance(r2=r2, mae=mae, mse=mse, rmse=rmse)
                 y_pred= pd.DataFrame(y_pred_svm)
                 y_pred.columns= ['Pred_Accessibility']
                 pred_df = pd.concat([x_test.reset_index(drop='True'),y_test.reset_index(drop='True'),y_pred.reset_index(drop='True')],axis=1)
@@ -302,7 +293,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 st.write('Split percentage: {}'.format(0.3))
 
             
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 hidden_units1 = 60
                 hidden_units2 = 40
                 hidden_units3 = 20
@@ -331,13 +322,12 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                     batch_size=64,
                     validation_split=0.2
                 )
-                st.write('Model training Error')
+                styles.info_box("📉 Training Progress", "Model training completed. See loss curve below.")
                 PredictionUtils.nn_plot_history(history, 'root_mean_squared_error')
                 y_pred= model.predict(x_test_std).tolist()
                 mse = metrics.mean_squared_error(y_test, y_pred, squared=False)
                 rmse = np.sqrt(mse)
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                styles.format_model_performance(mse=mse, rmse=rmse)
                 y_pred= pd.DataFrame(y_pred)
                 y_pred.columns= ['Pred_Accessibility']
                 pred_df = pd.concat([x_test.reset_index(drop='True'),y_test.reset_index(drop='True'),y_pred.reset_index(drop='True')],axis=1)
@@ -352,7 +342,7 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 st.write('Split percentage: {}'.format(0.3))
 
             
-            with st.expander('Model Performance', expanded=False):
+            with st.expander('📊 Model Performance', expanded=True):
                 input_size=8
                 output_size=1
                 models = tf.keras.Sequential([
@@ -364,26 +354,30 @@ def eCell_Accessibility_process_render(dataset_name, model_name):
                 y_pred= models.predict(x_test_std)
                 mse = metrics.mean_squared_error(y_test, y_pred, squared=False)
                 rmse = np.sqrt(mse)
-                st.write('MSE: ', mse)
-                st.write('RMSE: ', rmse)
+                styles.format_model_performance(mse=mse, rmse=rmse)
                 y_pred= pd.DataFrame(y_pred)
                 y_pred.columns= ['Pred_Retainability']
                 pred_df = pd.concat([x_test.reset_index(drop='True'),y_test.reset_index(drop='True'),y_pred.reset_index(drop='True')],axis=1)
 
-    prompt.success('Model trained!')
+    prompt.success('✅ Model Training Complete!')
 
-    st.subheader('Model Prediction Dataframes')
-    with st.spinner('Predicting dataframes...'):        
+    styles.styled_divider()
+    styles.section_header("Prediction Results", "🎯")
+    with st.spinner('Generating predictions...'):        
         prompt = st.empty()
-        with st.expander('Predicted Dataframe', expanded=False):
-            st.write(pred_df)    
-    prompt.success('Dataframes created!')
+        with st.expander('📋 Predicted Dataframe', expanded=True):
+            styles.info_box("Dataset Preview", f"Showing predictions for {len(pred_df)} samples")
+            st.dataframe(pred_df)    
+    prompt.success('✅ Predictions Generated!')
 
 def eCell_Retainability_process_render(dataset_name, model_name):
-    st.subheader('Exploratory data analysis')
+    # Inject custom CSS
+    styles.inject_analysis_css()
+    
+    styles.section_header("Exploratory Data Analysis", "🔍")
     with st.spinner('Loading Data...'):        
         prompt = st.empty()  
-        with st.expander('Data Summary', expanded=False):
+        with st.expander('📊 Data Summary', expanded=False):
            #Importing the given Data Set
             data = pd.read_csv('data/eCell_Retainability_data.csv')
             st.write('Data sample')
@@ -412,7 +406,7 @@ def eCell_Retainability_process_render(dataset_name, model_name):
             st.write('Data Description')
             st.write(data.describe())
 
-        with st.expander('Data Plots', expanded=False):
+        with st.expander('📈 Data Plots', expanded=False):
             
             st.write('Joint Distributions of independent variables')
             chart=sns.pairplot(data[['ErabRelAbnormalEnb_Param1','ErabRelAbnormalEnb_Param2','ErabRelAbnormalMme_Param1','ErabRelAbnormalMme_Param2','ErabRelMme_Param1','ErabRelMme_Param2','ErabRelNormalEnb_Param1','ErabRelNormalEnb_Param2']], diag_kind="kde")
@@ -471,15 +465,16 @@ def eCell_Retainability_process_render(dataset_name, model_name):
             #seperating independent and dependent variables
             x = data.drop(['Retainability','eCell_Id'], axis=1)
             y = data['Retainability']
-            st.write('Data Shape')
-            st.write(x.shape, y.shape)
-    prompt.success('Data Loaded!')
+            styles.display_data_shape(x.shape, "Feature matrix")
+            styles.display_data_shape(y.shape, "Target vector")
+    prompt.success('✅ Data Loaded Successfully!')
 
-    st.subheader('Model Performance Metrics')
+    styles.styled_divider()
+    styles.section_header("Model Performance Metrics", "📈")
     with st.spinner('Training Model...'):        
         prompt = st.empty()
         if model_name == 'Linear_Regression':
-            with st.expander('Training & Test Split', expanded=False):
+            with st.expander('🔧 Training & Test Split', expanded=False):
                 x_train,x_test,y_train,y_test = train_test_split(x,y,random_state = 56,test_size=0.3)
                 scaler = MinMaxScaler()
                 x_train_std = scaler.fit_transform(x_train)
@@ -706,11 +701,13 @@ def eCell_Retainability_process_render(dataset_name, model_name):
                 y_pred.columns= ['Pred_Retainability']
                 pred_df = pd.concat([x_test.reset_index(drop='True'),y_test.reset_index(drop='True'),y_pred.reset_index(drop='True')],axis=1)
 
-    prompt.success('Model trained!')
+    prompt.success('✅ Model Training Complete!')
 
-    st.subheader('Model Prediction Dataframes')
-    with st.spinner('Predicting dataframes...'):        
+    styles.styled_divider()
+    styles.section_header("Prediction Results", "🎯")
+    with st.spinner('Generating predictions...'):        
         prompt = st.empty()
-        with st.expander('Predicted Dataframe', expanded=False):
-            st.write(pred_df)    
-    prompt.success('Dataframes created!')
+        with st.expander('📋 Predicted Dataframe', expanded=True):
+            styles.info_box("Dataset Preview", f"Showing predictions for {len(pred_df)} samples")
+            st.dataframe(pred_df)    
+    prompt.success('✅ Predictions Generated!')

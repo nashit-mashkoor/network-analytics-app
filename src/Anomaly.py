@@ -20,12 +20,16 @@ from sklearn.svm import OneClassSVM
 from sklearn.cluster import DBSCAN
 from sklearn.metrics import classification_report, confusion_matrix
 from . import AnomalyUtils
+from . import styles
 
 def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare):
-    st.subheader('Exploratory data analysis')
+    # Inject custom CSS
+    styles.inject_analysis_css()
+    
+    styles.section_header("Exploratory Data Analysis", "🔍")
     with st.spinner('Loading Data...'):        
         prompt = st.empty() 
-        with st.expander('Raw Sample Data', expanded=False):
+        with st.expander('📋 Raw Sample Data', expanded=False):
             sample_data = pd.read_csv("data/Jitter_15min_15days_30nodes.csv")
             st.write(sample_data)
 
@@ -47,14 +51,15 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
         with st.expander('Individual instances',expanded=False):
             AnomalyUtils.ip_link_visualise_all_instances(df_day)
 
-        with st.expander('Boxplot visualisation',expanded=False):
+        with st.expander('📊 Boxplot Visualization',expanded=False):
             AnomalyUtils.ip_link_visualise_all_boxplot(df_day)
-    prompt.success('Data Loaded!')
+    prompt.success('✅ Data Loaded Successfully!')
 
-    st.subheader('Training dataframes and results')
+    styles.styled_divider()
+    styles.section_header("Training & Outlier Detection", "🔍")
     with st.spinner('Training Model...'):        
         prompt = st.empty() 
-        with st.expander('Outlier detection results', expanded=False):
+        with st.expander('🎯 Outlier Detection Results', expanded=True):
             X = df_day.T
             # ###############################################
             # Identify outliers in the training dataset
@@ -226,12 +231,13 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                 AnomalyUtils.ip_link_visualise_all_instances_with_anomaly( X, df_day, outlier4) 
             elif model_name == 'DBSCAN':
                 AnomalyUtils.ip_link_visualise_all_instances_with_anomaly( X, df_day, outlier5) 
-    prompt.success('Model Loaded!')
+    prompt.success('✅ Model Training Complete!')
 
-    st.subheader('Testing and Evaluation')
-    with st.spinner('Test Model...'):        
+    styles.styled_divider()
+    styles.section_header("Testing & Evaluation", "📋")
+    with st.spinner('Testing Model...'):        
         prompt = st.empty() 
-        with st.expander('Test Data', expanded=False):
+        with st.expander('🧪 Test Data', expanded=False):
             X_test = X.copy()
             for i in range(len(X_test)):
                 condition = np.average(X_test.loc[i]) + 3 * (statistics.stdev(X_test.loc[i]))
@@ -258,12 +264,13 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
                AnomalyUtils.ip_link_test(X_test, outlier4, True) 
             elif model_name == 'DBSCAN':
                 AnomalyUtils.ip_link_test(X_test, outlier5, True)
-    prompt.success('Testing Complete!')
+    prompt.success('✅ Testing Complete!')
     if compare:
-        st.subheader('Comparison Of Models')
-        with st.spinner('Comparing...'):
+        styles.styled_divider()
+        styles.section_header("Model Comparison", "⚖️")
+        with st.spinner('Comparing models...'):
             prompt = st.empty()
-            with st.expander('Compare Results', expanded=False):
+            with st.expander('📊 Comparison Results', expanded=True):
                 for i in range(30):
                     st.write("========================================================")
                     st.write("========================= IP_LINK_" + str(i+1) + " ======================")
@@ -296,10 +303,13 @@ def jitter_15min_15days_30nodes_process_render(dataset_name, model_name, compare
         prompt.success('Comparison Complete!')
 
 def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
-    st.subheader('Exploratory data analysis')
+    # Inject custom CSS
+    styles.inject_analysis_css()
+    
+    styles.section_header("Exploratory Data Analysis", "🔍")
     with st.spinner('Loading Data...'):        
         prompt = st.empty() 
-        with st.expander('Raw Sample Data', expanded=False):
+        with st.expander('📋 Raw Sample Data', expanded=False):
             sample_data = pd.read_csv("data/Total_Traffic_Rate_5min_7days_20nodes.csv")
             st.write(sample_data)
 
@@ -321,14 +331,15 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
         with st.expander('Individual instances',expanded=False):
             AnomalyUtils.ip_router_visualise_all_instances(df_day)
 
-        with st.expander('Boxplot visualisation',expanded=False):
+        with st.expander('📊 Boxplot Visualization',expanded=False):
             AnomalyUtils.ip_router_visualise_all_boxplot(df_day)
-    prompt.success('Data Loaded!')
+    prompt.success('✅ Data Loaded Successfully!')
 
-    st.subheader('Training dataframes and results')
+    styles.styled_divider()
+    styles.section_header("Training & Outlier Detection", "🔍")
     with st.spinner('Training Model...'):        
         prompt = st.empty() 
-        with st.expander('Outlier detection results', expanded=False):
+        with st.expander('🎯 Outlier Detection Results', expanded=True):
             X = df_day.T
             # ###############################################
             # Identify outliers in the training dataset
@@ -501,10 +512,11 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                 AnomalyUtils.ip_router_visualise_all_instances_with_anomaly( X, df_day, outlier4) 
             elif model_name == 'DBSCAN':
                 AnomalyUtils.ip_router_visualise_all_instances_with_anomaly( X, df_day, outlier5) 
-    prompt.success('Model Loaded!')
+    prompt.success('✅ Model Training Complete!')
 
-    st.subheader('Testing and Evaluation')
-    with st.spinner('Test Model...'):        
+    styles.styled_divider()
+    styles.section_header("Testing & Evaluation", "📋")
+    with st.spinner('Testing Model...'):        
         prompt = st.empty() 
         with st.expander('Test Data', expanded=False):
             X_test = X.copy()
@@ -533,12 +545,13 @@ def total_traffic_rate_5min_7days_20nodes(dataset_name, model_name, compare):
                AnomalyUtils.ip_router_test(X_test, outlier4, True) 
             elif model_name == 'DBSCAN':
                 AnomalyUtils.ip_router_test(X_test, outlier5, True)
-    prompt.success('Testing Complete!')
+    prompt.success('✅ Testing Complete!')
     if compare:
-        st.subheader('Comparison Of Models')
-        with st.spinner('Comparing...'):
+        styles.styled_divider()
+        styles.section_header("Model Comparison", "⚖️")
+        with st.spinner('Comparing models...'):
             prompt = st.empty()
-            with st.expander('Compare Results', expanded=False):
+            with st.expander('📊 Comparison Results', expanded=True):
                 for i in range(20):
                     st.write("========================================================")
                     st.write("========================= NR_RTR_PORT_" + str(i+1) + " ======================")

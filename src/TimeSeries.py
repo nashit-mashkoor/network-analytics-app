@@ -27,11 +27,14 @@ from datetime import timedelta
 import keras.backend as k
 import warnings
 import streamlit as st
+from . import styles
 warnings.filterwarnings('ignore')
 
 def msc_traffic_process_render(dataset_name, model_name):
+    # Inject custom CSS
+    styles.inject_analysis_css()
     
-    st.subheader('Exploratory data analysis')
+    styles.section_header("Exploratory Data Analysis", "🔍")
     with st.spinner('Loading Data...'):        
         prompt = st.empty()     
         #DATA LOADING
@@ -46,7 +49,7 @@ def msc_traffic_process_render(dataset_name, model_name):
         data.index = pd.to_datetime(data.index)
             # column names
         cols = [data.columns]
-        with st.expander('Raw Sample Data', expanded=False):
+        with st.expander('📋 Raw Sample Data', expanded=False):
             st.write('Head')
             temp = data.iloc[:5, :].reset_index().rename(columns={'index':'MSC_Id'})
             temp['MSC_Id'] = temp['MSC_Id'].dt.date
@@ -55,7 +58,7 @@ def msc_traffic_process_render(dataset_name, model_name):
             temp = data.iloc[-5:, :].reset_index().rename(columns={'index':'MSC_Id'})
             temp['MSC_Id'] = temp['MSC_Id'].dt.date   
             st.write(temp)
-        with st.expander('Data Summary', expanded=False):
+        with st.expander('📊 Data Summary', expanded=False):
             st.write('Shape:')
             st.write(data.shape)
             st.write('Info:')
@@ -70,7 +73,7 @@ def msc_traffic_process_render(dataset_name, model_name):
             st.table(data.isnull().sum())
             st.write('Dataset description')
             st.table(data.describe())
-        with st.expander('Data summary visualisation', expanded=False):
+        with st.expander('📈 Data Visualization', expanded=False):
             st.write('Summary plots')
             fig, ax = plt.subplots(5, 2, figsize=(15, 12))
             fig.tight_layout(pad=3)
@@ -121,9 +124,10 @@ def msc_traffic_process_render(dataset_name, model_name):
                 fig.add_trace(go.Box(y=data[col].values, name=data[col].name))
             fig.update_layout(title_text="MSC Traffic", height=700)                       
             st.plotly_chart(fig, use_container_width=True)
-    prompt.success('Data Loaded!')
+    prompt.success('✅ Data Loaded Successfully!')
 
-    st.subheader('Training plots and performance')
+    styles.styled_divider()
+    styles.section_header("Training & Performance", "⚙️")
     with st.spinner('Prediciting...'):
         prompt = st.empty()
         if model_name == 'HWES':
@@ -161,11 +165,12 @@ def msc_traffic_process_render(dataset_name, model_name):
                 k.clear_session()
                 model = TimeSeriesUtils.lstm_create_model(n_past, n_features, n_future)
                 st.write('Model Created!')
-            with st.expander('Fitting Daily Data', expanded=False):
+            with st.expander('⚙️ Fitting Daily Data', expanded=False):
                 f15d, f1m, f3m = TimeSeriesUtils.lstm_models(data, 300, n_past, n_future, n_features, model)   
-    prompt.success('Training Completed!')
+    prompt.success('✅ Training Complete!')
 
-    st.subheader('Forecast dataframes')
+    styles.styled_divider()
+    styles.section_header("Forecast Dataframes", "📊")
     with st.spinner('Forecasting...'):
         prompt = st.empty()
         with st.expander('15 Day', expanded=False):
@@ -189,31 +194,35 @@ def msc_traffic_process_render(dataset_name, model_name):
             temp = f3m.iloc[:5, :].reset_index().rename(columns={'index':'Date'})
             temp['Date'] = temp['Date'].dt.date
             st.write(temp)
-    prompt.success('Forecasting Completed!')
+    prompt.success('✅ Forecasting Complete!')
 
-    st.subheader('Forecast plots')
-    with st.spinner('Plotting Forecast...'):
+    styles.styled_divider()
+    styles.section_header("Forecast Visualizations", "📈")
+    with st.spinner('Generating plots...'):
         prompt = st.empty()
-        with st.expander('15 Day', expanded=False):
+        with st.expander('📅 15 Day Forecast', expanded=True):
            TimeSeriesUtils.plot_forecasts(f15d)
-        with st.expander('1 Month', expanded=False):
+        with st.expander('📅 1 Month Forecast', expanded=False):
            TimeSeriesUtils.plot_forecasts(f1m)
-        with st.expander('3 Month', expanded=False):
+        with st.expander('📅 3 Month Forecast', expanded=False):
             TimeSeriesUtils.plot_forecasts(f3m)
-    prompt.success('Plotting Completed!')
+    prompt.success('✅ Visualization Complete!')
 
 
 def apn_utilisation_process_render(dataset_name, model_name):
-    st.subheader('Exploratory data analysis')
+    # Inject custom CSS
+    styles.inject_analysis_css()
+    
+    styles.section_header("Exploratory Data Analysis", "🔍")
     with st.spinner('Loading Data...'):        
         prompt = st.empty()     
         #DATA LOADING
         apn = pd.read_csv('data/apn_utilization_hourly_3months_50nodes.csv', index_col=0, parse_dates=True)
-        with st.expander('Raw Sample Data', expanded=False):
+        with st.expander('📋 Raw Sample Data', expanded=False):
             st.write('Head')
             # DISPLAY FIRST FIVE ROWS
             st.write(apn.head())
-        with st.expander('Data Summary', expanded=False):
+        with st.expander('📊 Data Summary', expanded=False):
             # EXTRACT COLUMNS
             cols = apn.columns[2:]   
             # CHECK FOR NULL VALUES
@@ -248,8 +257,10 @@ def apn_utilisation_process_render(dataset_name, model_name):
             cols = list(df)[0:50]
             st.write('Training Variables')
             st.write(cols[:5])
-    st.subheader('Training plots and performance')
-    with st.spinner('Prediciting...'):
+    
+    styles.styled_divider()
+    styles.section_header("Training & Performance", "⚙️")
+    with st.spinner('Training model...'):
         prompt = st.empty()
         if model_name == 'LSTM_GRU':
             with st.expander('Training & Testing split', expanded=False):
@@ -658,35 +669,31 @@ def apn_utilisation_process_render(dataset_name, model_name):
                 f1m["Date"] = pd.date_range(start= '2021-04-07', periods=720, freq='1H')
                 f1m = f1m.set_index("Date")
 
-    prompt.success('Training Completed!')
+    prompt.success('✅ Training Complete!')
 
-    st.subheader('Forecast dataframes')
+    styles.styled_divider()
+    styles.section_header("Forecast Dataframes", "📊")
     with st.spinner('Forecasting...'):
         prompt = st.empty()
-        with st.expander('7 Day', expanded=False):
-            st.write('Data dimensions:')
-            st.write(f7d.shape)
-            st.write('7 Day Dataframe')
-            st.write(f7d)
-        with st.expander('15 Day', expanded=False):
-            st.write('Data dimensions:')
-            st.write(f15d.shape)
-            st.write('15 Day Dataframe')
-            st.write(f15d)
-        with st.expander('1 Month', expanded=False):
-            st.write('Data dimensions:')
-            st.write(f1m.shape)
-            st.write('1 Month Dataframe')
-            st.write(f1m)
-    prompt.success('Forecasting Completed!')
+        with st.expander('📅 7 Day Forecast', expanded=True):
+            styles.display_data_shape(f7d.shape, "7-day forecast")
+            st.dataframe(f7d)
+        with st.expander('📅 15 Day Forecast', expanded=False):
+            styles.display_data_shape(f15d.shape, "15-day forecast")
+            st.dataframe(f15d)
+        with st.expander('📅 1 Month Forecast', expanded=False):
+            styles.display_data_shape(f1m.shape, "1-month forecast")
+            st.dataframe(f1m)
+    prompt.success('✅ Forecasting Complete!')
 
-    st.subheader('Forecast plots')
-    with st.spinner('Plotting Forecast...'):
+    styles.styled_divider()
+    styles.section_header("Forecast Visualizations", "📈")
+    with st.spinner('Generating plots...'):
         prompt = st.empty()
-        with st.expander('7 Day', expanded=False):
+        with st.expander('📅 7 Day Forecast Plot', expanded=True):
            TimeSeriesUtils.plot_forecasts(f7d)
-        with st.expander('15 Day', expanded=False):
+        with st.expander('📅 15 Day Forecast Plot', expanded=False):
            TimeSeriesUtils.plot_forecasts(f15d)
-        with st.expander('1 Month', expanded=False):
+        with st.expander('📅 1 Month Forecast Plot', expanded=False):
             TimeSeriesUtils.plot_forecasts(f1m)
-    prompt.success('Plotting Completed!')
+    prompt.success('✅ Visualization Complete!')
